@@ -64,7 +64,7 @@ class Runtime:
     try:
      reader,writer=await asyncio.open_connection('127.0.0.1',self.port+1);writer.close();await writer.wait_closed();raise RuntimeError('Internal inference port is occupied; no process was stopped')
     except ConnectionRefusedError:pass
-    args=[sys.executable,str(self.comfy/'main.py'),'--listen','127.0.0.1','--port',str(self.port+1),'--gpu-only','--fp8_e4m3fn-text-enc','--cache-none','--disable-all-custom-nodes','--offline','--input-directory',str(self.input),'--output-directory',str(self.output)]
+    args=[sys.executable,str(self.comfy/'main.py'),'--listen','127.0.0.1','--port',str(self.port+1),'--gpu-only','--fp8_e4m3fn-text-enc','--disable-async-offload','--disable-pinned-memory','--cache-none','--disable-all-custom-nodes','--offline','--input-directory',str(self.input),'--output-directory',str(self.output)]
     with (self.data/'inference.log').open('wb') as log:
      self.child=await asyncio.create_subprocess_exec(*args,cwd=str(self.comfy),stdout=log,stderr=log,creationflags=subprocess.CREATE_NO_WINDOW if os.name=='nt' else 0)
      self.job=Job(self.child.pid)
